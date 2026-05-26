@@ -15,7 +15,7 @@ models:
     # ${PORT} is substituted by llama-swap with a free local port; it proxies 11434 -> ${PORT}.
     cmd: |
       taskset -c 0-7 llama-server
-        -m /home/ramb0t/models/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-UD-Q4_K_XL.gguf
+        -m ${HOME}/models/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-UD-Q4_K_XL.gguf
         -c 262144 --parallel 1 --cache-ram 0 -ngl 999 -fa 1 --no-mmap --jinja
         -b 4096 -ub 1024
         -t 8 -tb 8

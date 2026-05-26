@@ -6,7 +6,7 @@
 podman exec -d llama-rocm-7.2.3 bash ~/fw-desktop-llm/bin/launch.sh
 ```
 
-`bin/launch.sh` does `cd /home/ramb0t && exec ./serve.sh` (assumes the live `serve.sh`
+`bin/launch.sh` does `cd "$HOME" && exec ./serve.sh` (assumes the live `serve.sh`
 is in `~`; adjust if you make the repo the source of truth).
 
 On first run the 30B and 4B come up in ~5 s each. The 80B does **not** start —
@@ -103,7 +103,7 @@ sudo systemctl disable --now ollama
 
 ### `./serve.sh: No such file or directory` in serve.log
 
-The container's working directory wasn't `/home/ramb0t`. Use `bin/launch.sh` rather
+The container's working directory wasn't `$HOME`. Use `bin/launch.sh` rather
 than calling `serve.sh` directly via `podman exec`.
 
 ### 80B never spawns despite hits on 11434

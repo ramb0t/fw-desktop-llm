@@ -21,18 +21,18 @@ trap cleanup SIGINT SIGTERM
 #                     (ROCm flash-attn fast path requires matched f16 KV)
 
 # Rotate previous logs so each run starts fresh; keep one prior generation.
-for f in /home/ramb0t/llama-swap.log /home/ramb0t/llama-30b.log /home/ramb0t/llama-4b.log; do
+for f in $HOME/llama-swap.log $HOME/llama-30b.log $HOME/llama-4b.log; do
     [ -f "$f" ] && mv -f "$f" "$f.prev"
 done
 
 # Port 11434: llama-swap proxy for the 80B (Qwen3-Coder-Next).
 # llama-swap spawns the 80B llama-server on demand (first request) and unloads it
 # after 30 min idle. Cores 0-7 are reserved for it via taskset inside the swap config.
-# See /home/ramb0t/llama-swap.yaml.
-/home/ramb0t/bin/llama-swap \
-  -config /home/ramb0t/llama-swap.yaml \
+# See $HOME/llama-swap.yaml.
+$HOME/bin/llama-swap \
+  -config $HOME/llama-swap.yaml \
   -listen 0.0.0.0:11434 \
-  -watch-config >>/home/ramb0t/llama-swap.log 2>&1 &
+  -watch-config >>$HOME/llama-swap.log 2>&1 &
 PID_BIG=$!
 
 # Port 11435: Fast model (Qwen3-Coder 30B) — cores 8-13, 2 slots
@@ -43,7 +43,7 @@ llama-server -m models/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Ins
   -b 4096 -ub 1024 \
   -t 6 -tb 6 \
   --host 0.0.0.0 --port 11435 --alias qwen3-coder-30b \
-  --temp 0.7 --top-p 0.8 --top-k 20 --min-p 0 >>/home/ramb0t/llama-30b.log 2>&1 &
+  --temp 0.7 --top-p 0.8 --top-k 20 --min-p 0 >>$HOME/llama-30b.log 2>&1 &
 PID_FAST=$!
 
 # Port 11436: HA tiny (Qwen3-4B-Instruct-2507) — cores 14-15, isolated for voice latency
@@ -53,7 +53,7 @@ llama-server -m models/Qwen3-4B-Instruct-2507-GGUF/Qwen3-4B-Instruct-2507-UD-Q4_
   -b 4096 -ub 1024 \
   -t 2 -tb 2 \
   --host 0.0.0.0 --port 11436 --alias qwen3-4b-ha \
-  --temp 0.7 --top-p 0.8 --top-k 20 --min-p 0 >>/home/ramb0t/llama-4b.log 2>&1 &
+  --temp 0.7 --top-p 0.8 --top-k 20 --min-p 0 >>$HOME/llama-4b.log 2>&1 &
 PID_HA=$!
 
 echo "Started: swap PID=$PID_BIG (11434 -> 80B on demand), fast PID=$PID_FAST (cores 8-13), ha PID=$PID_HA (cores 14-15)"

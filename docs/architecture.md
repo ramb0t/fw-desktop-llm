@@ -45,7 +45,7 @@ right RDNA3.5 patches, sparing us from building llama.cpp + ROCm from source on 
 trade-off is that `serve.sh` must be launched via `podman exec` so `llama-server` resolves; the
 host can still talk to the ports because the toolbox shares the host network namespace by default.
 
-`bin/launch.sh` is the tiny wrapper that does `cd /home/ramb0t/fw-desktop-llm && exec ./serve.sh` —
+`bin/launch.sh` is the tiny wrapper that does `cd "$HOME" && exec ./serve.sh` —
 necessary because `podman exec -d` doesn't set a working directory matching the host's `$PWD`, and
 `serve.sh` references models with relative paths.
 

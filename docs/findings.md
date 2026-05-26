@@ -96,7 +96,7 @@ for the typical agentic workload pattern (long sessions, infrequent cold starts)
 
 ## Toolbox launch quirk
 
-`podman exec -d ... bash -lc 'cd /home/ramb0t && ./serve.sh'` has intermittently arrived
+`podman exec -d ... bash -lc 'cd "$HOME" && ./serve.sh'` has intermittently arrived
 inside the container without the `cd` segment, causing `./serve.sh: No such file or
 directory` because the default cwd is `/`. Quoting / serialisation artefact.
 

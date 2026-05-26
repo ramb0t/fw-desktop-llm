@@ -2,7 +2,7 @@
 # Log GPU state to CSV. Usage: rocm-watch.sh [interval_sec] [output.csv]
 # Each row: iso_ts,edge_C,ppt_W,sclk_mhz,gtt_used_gb,gtt_total_gb
 INTERVAL="${1:-5}"
-OUT="${2:-/home/ramb0t/rocm-watch-$(date +%Y%m%d-%H%M%S).csv}"
+OUT="${2:-$HOME/rocm-watch-$(date +%Y%m%d-%H%M%S).csv}"
 echo "ts,edge_C,ppt_W,sclk_mhz,gtt_used_gb,gtt_total_gb" > "$OUT"
 echo "logging to $OUT every ${INTERVAL}s (Ctrl+C to stop)"
 while true; do
