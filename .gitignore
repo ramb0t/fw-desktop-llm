@@ -1,0 +1,15 @@
+# Logs
+*.log
+*.log.prev
+
+# Models (huge, downloaded separately)
+models/
+*.gguf
+
+# Binaries downloaded at install time
+bin/llama-swap
+
+# OS / editor
+.DS_Store
+*.swp
+*~
