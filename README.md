@@ -37,8 +37,11 @@ mv /tmp/llama-swap ~/bin/llama-swap && chmod +x ~/bin/llama-swap
 
 # 2. Place models under ~/models/ matching the paths in serve.sh and llama-swap.yaml.
 
-# 3. Launch (must happen inside the toolbox so llama-server resolves):
-podman exec -d llama-rocm-7.2.3 bash ~/fw-desktop-llm/bin/launch.sh
+# 3. Launch (must happen inside the toolbox so llama-server resolves).
+#    -u/-w are required so `$HOME` inside the container matches your host home,
+#    otherwise launch.sh will cd into /root and fail to find serve.sh.
+podman exec -d -u "$(id -un)" -w "$HOME" llama-rocm-7.2.3 \
+  bash "$HOME/fw-desktop-llm/bin/launch.sh"
 ```
 
 See [docs/operations.md](docs/operations.md) for stop/restart, logs, health checks.

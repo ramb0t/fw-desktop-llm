@@ -3,8 +3,13 @@
 ## Start
 
 ```bash
-podman exec -d llama-rocm-7.2.3 bash ~/fw-desktop-llm/bin/launch.sh
+podman exec -d -u "$(id -un)" -w "$HOME" llama-rocm-7.2.3 \
+  bash "$HOME/fw-desktop-llm/bin/launch.sh"
 ```
+
+The `-u`/`-w` flags are load-bearing: `podman exec` defaults to the container's
+root user with `HOME=/root`, so without them `launch.sh`'s `cd "$HOME"` lands in
+the wrong place and `serve.sh: No such file or directory` follows.
 
 `bin/launch.sh` does `cd "$HOME" && exec ./serve.sh` (assumes the live `serve.sh`
 is in `~`; adjust if you make the repo the source of truth).

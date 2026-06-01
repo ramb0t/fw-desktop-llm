@@ -96,9 +96,17 @@ for the typical agentic workload pattern (long sessions, infrequent cold starts)
 
 ## Toolbox launch quirk
 
-`podman exec -d ... bash -lc 'cd "$HOME" && ./serve.sh'` has intermittently arrived
-inside the container without the `cd` segment, causing `./serve.sh: No such file or
-directory` because the default cwd is `/`. Quoting / serialisation artefact.
+Two separate failure modes hit while iterating on the launcher; documenting both
+because each looks like the other:
 
-**Fix**: launch via a wrapper script (`bin/launch.sh`) that does its own `cd` before
-`exec`-ing serve.sh. Robust against any quoting weirdness.
+1. `podman exec -d ... bash -lc 'cd "$HOME" && ./serve.sh'` has intermittently arrived
+   inside the container without the `cd` segment, causing `./serve.sh: No such file
+   or directory` because the default cwd is `/`. Quoting / serialisation artefact.
+   **Fix**: launch via a wrapper script (`bin/launch.sh`) that does its own `cd`
+   before `exec`-ing serve.sh.
+2. `podman exec` defaults to the container's root user with `HOME=/root`, so
+   `launch.sh`'s `cd "$HOME"` lands in `/root` rather than the host's home and
+   `serve.sh` isn't found there either. Identical error message, different cause.
+   **Fix**: pass `-u "$(id -un)" -w "$HOME"` to `podman exec`, so the container
+   exec inherits the host user and cwd. Kept this on the invocation rather than
+   hardcoding the path in `launch.sh` so the repo stays portable.
